@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         img.onload = () => {
             rotator.style.backgroundImage = `url(${backgroundImages[0]})`;
             rotator.style.opacity = 1; // Fade in initially
-            setInterval(changeImage, 5000); // Rotate every 5 seconds
+            setInterval(changeImage, 15000); // Rotate every 5 seconds
         };
     };
 
