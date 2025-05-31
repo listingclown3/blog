@@ -17,14 +17,14 @@ const config = {
         galleryImages: [
             { src: 'https://picsum.photos/seed/a/800/600', alt: 'Description for image 1' },
             { src: 'https://picsum.photos/seed/b/800/600', alt: 'Description for image 2' },
-        ]
-    },
-    backgroundOpacity: 1,
-    backgroundImages: [
+        ],
+        backgroundOpacity: 0.1,
+        backgroundImages: [
             'https://static.wixstatic.com/media/c14cd7_ec8f132006314a87a165b381e865cfe8~mv2.png/v1/fill/w_980,h_551,fp_0.44_0.26,q_90,enc_avif,quality_auto/c14cd7_ec8f132006314a87a165b381e865cfe8~mv2.png',
             'https://img.youtube.com/vi/lPAINShvzzI/maxresdefault.jpg',
             'https://static.wixstatic.com/media/501e83_b08ec240ec7642fc96c41ff789573e06~mv2.jpg/v1/fill/w_980,h_551,q_90,enc_avif,quality_auto/501e83_b08ec240ec7642fc96c41ff789573e06~mv2.jpg'
-    ],
+        ]
+    },
     experience: [
         {
             role: 'Senior Software Engineer',
