@@ -1,0 +1,180 @@
+/* --- Google Font Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+/* --- CSS Variables (Modern Color Palette) --- */
+:root {
+    --bg-color: #121212;
+    --primary-surface-color: #1E1E1E;
+    --secondary-surface-color: #2a2a2a;
+    --primary-text-color: #EAEAEA;
+    --secondary-text-color: #A0A0A0;
+    --accent-color: #007BFF;
+    --border-color: #333333;
+}
+
+/* --- General Body & Typography Styling --- */
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--primary-text-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Header & Navigation Bar --- */
+header {
+    background-color: rgba(18, 18, 18, 0.7);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+#navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#navbar a {
+    color: var(--secondary-text-color);
+    text-decoration: none;
+    padding: 0.5rem 1.5rem;
+    margin: 0 0.5rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+#navbar a:hover {
+    color: var(--primary-text-color);
+    background-color: var(--secondary-surface-color);
+}
+#navbar a.active {
+    color: var(--accent-color);
+    background-color: rgba(0, 123, 255, 0.1);
+    font-weight: 700;
+}
+
+/* --- Main Content & Page Layout --- */
+main {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 2rem auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* --- Content Headers --- */
+h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+    color: var(--primary-text-color);
+}
+p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--secondary-text-color);
+}
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* --- Home Page --- */
+#home-header { text-align: center; margin: 3rem 0; }
+#home-header h1 { font-size: 4rem; margin-bottom: 0.5rem; border: none; color: var(--primary-text-color); }
+#home-header p { font-size: 1.5rem; color: var(--secondary-text-color); }
+#social-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin: 2rem 0 4rem 0; }
+.social-button { background-color: var(--primary-surface-color); border: 1px solid var(--border-color); color: var(--primary-text-color); padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; }
+.social-button:hover { background-color: var(--accent-color); border-color: var(--accent-color); color: white; transform: translateY(-3px); }
+#gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+.gallery-image { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 1px solid var(--border-color); opacity: 0.8; transition: opacity 0.3s ease; }
+.gallery-image:hover { opacity: 1; }
+.home-section { margin: 6rem 0; }
+.home-section h2 { text-align: center; font-size: 2rem; margin-bottom: 3rem; }
+.about-me-text { max-width: 700px; margin: 0 auto; text-align: center; font-size: 1.2rem; }
+
+/* --- Experience Timeline --- */
+#experience-timeline { position: relative; max-width: 700px; margin: 0 auto; padding: 2rem 0; }
+#experience-timeline::before { content: ''; position: absolute; top: 0; left: 20px; height: 100%; width: 4px; background: var(--border-color); }
+.timeline-item { position: relative; margin-bottom: 3rem; padding-left: 60px; opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+.timeline-item.visible { opacity: 1; transform: translateY(0); }
+.timeline-item::before { content: ''; position: absolute; left: 10px; top: 5px; width: 24px; height: 24px; border-radius: 50%; background: var(--bg-color); border: 4px solid var(--accent-color); z-index: 1; }
+.timeline-content { background: var(--primary-surface-color); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); }
+.timeline-content h3 { margin: 0 0 0.25rem 0; color: var(--primary-text-color); }
+.timeline-company { font-weight: 500; color: var(--accent-color); margin: 0 0 0.5rem 0; }
+.timeline-date { font-size: 0.9rem; color: var(--secondary-text-color); margin-bottom: 1rem; }
+
+/* --- Project & Blog Cards --- */
+#project-list, #blog-list-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+.project-card, .blog-post-item { background-color: var(--primary-surface-color); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; text-decoration: none; }
+.project-card:hover, .blog-post-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+.project-thumbnail, .blog-thumbnail { width: 100%; height: 200px; object-fit: cover; }
+.project-content, .blog-item-content { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
+.project-content h3, .blog-item-content h3 { margin: 0 0 0.5rem 0; color: var(--primary-text-color); }
+.blog-item-content h3 { color: var(--accent-color); }
+.project-content p, .blog-item-content p { flex-grow: 1; color: var(--secondary-text-color); }
+.project-tags { margin: 1rem 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tag { background-color: var(--secondary-surface-color); color: var(--secondary-text-color); padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem; font-weight: 500; }
+.project-links { display: flex; gap: 1rem; margin-top: auto; }
+.project-button { background-color: var(--accent-color); color: white; padding: 0.5rem 1rem; border-radius: 8px; text-align: center; text-decoration: none; transition: background-color 0.3s ease; }
+.project-button:hover { background-color: #0056b3; }
+
+/* --- Blog Post Page --- */
+.blog-content { line-height: 1.8; }
+.blog-content h1, .blog-content h2, .blog-content h3 { color: var(--primary-text-color); margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+.blog-content p { margin-bottom: 1.5rem; }
+.blog-content pre { background-color: #0d1117; border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px; overflow-x: auto; }
+.blog-content code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+
+/* --- Background Rotator --- */
+#background-rotator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    z-index: -2;
+    opacity: 0; /* Start invisible */
+    transition: opacity 1s ease-in-out; /* Animate the opacity */
+}
+#background-rotator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* The overlay darkness is now controlled by a variable from the JS */
+    background-color: rgba(18, 18, 18, var(--bg-overlay-alpha, 0.85));
+    z-index: -1;
+}
+
+/* --- Project Detail Page --- */
+.back-link { display: inline-block; margin-bottom: 2rem; color: var(--accent-color); text-decoration: none; font-weight: 500; }
+.live-demo-button { float: right; }
+.project-detail-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; margin-top: 2rem; }
+.readme-container { background-color: var(--primary-surface-color); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); }
+.readme-container h1, .readme-container h2 { border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+.commit-container h3 { margin-top: 0; text-align: center; margin-bottom: 1.5rem; }
+.commit-tree { list-style: none; padding: 0; position: relative; border-left: 2px solid var(--border-color); padding-left: 2rem; }
+.commit-tree li { padding-bottom: 2rem; position: relative; }
+.commit-tree li::before { content: ''; position: absolute; left: -2.7rem; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-color); }
+.commit-message { font-weight: 500; margin-bottom: 0.5rem; }
+.commit-meta { font-size: 0.85rem; color: var(--secondary-text-color); }
+
+@media (max-width: 900px) {
+    .project-detail-layout { grid-template-columns: 1fr; }
+    .commit-container { margin-top: 2rem; }
+}

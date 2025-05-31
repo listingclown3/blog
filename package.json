@@ -1,0 +1,24 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/listingclown3/blog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/listingclown3/blog/issues"
+  },
+  "homepage": "https://github.com/listingclown3/blog#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "marked": "^15.0.12"
+  }
+}
