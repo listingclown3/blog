@@ -6,6 +6,12 @@ const { marked } = require('marked');
 
 // --- START OF CONFIGURATION ---
 
+// Base URL for your assets. For local dev, it points to your cdn-server.
+// In production, you would change this to your actual CDN domain.
+const cdnBaseUrl = process.env.NODE_ENV === 'production'
+    ? 'https://your-production-cdn-url.com'
+    : 'http://localhost:3001';
+
 const config = {
     homePage: {
         title: 'Christopher C. Luk',
@@ -15,14 +21,14 @@ const config = {
             With a strong foundation in both front-end and back-end development, I enjoy bringing ideas to life from concept to deployment.
         `,
         galleryImages: [
-            { src: 'https://picsum.photos/seed/a/800/600', alt: 'Description for image 1' },
-            { src: 'https://picsum.photos/seed/b/800/600', alt: 'Description for image 2' },
+            { src: `${cdnBaseUrl}/images/gallery/a.jpg`, alt: 'Description for image 1' },
+            { src: `${cdnBaseUrl}/images/gallery/b.jpg`, alt: 'Description for image 2' },
         ],
-        backgroundOpacity: 0.1,
+        backgroundOpacity: 1,
         backgroundImages: [
-            'https://static.wixstatic.com/media/c14cd7_ec8f132006314a87a165b381e865cfe8~mv2.png/v1/fill/w_980,h_551,fp_0.44_0.26,q_90,enc_avif,quality_auto/c14cd7_ec8f132006314a87a165b381e865cfe8~mv2.png',
-            'https://img.youtube.com/vi/lPAINShvzzI/maxresdefault.jpg',
-            'https://static.wixstatic.com/media/501e83_b08ec240ec7642fc96c41ff789573e06~mv2.jpg/v1/fill/w_980,h_551,q_90,enc_avif,quality_auto/501e83_b08ec240ec7642fc96c41ff789573e06~mv2.jpg'
+            `${cdnBaseUrl}/images/backgrounds/1.png`,
+            `${cdnBaseUrl}/images/backgrounds/2.jpg`,
+            `${cdnBaseUrl}/images/backgrounds/3.jpg`
         ]
     },
     experience: [
@@ -45,7 +51,7 @@ const config = {
         overrides: [
             {
                 name: 'my-portfolio',
-                thumbnail: '/images/portfolio-custom.jpg',
+                thumbnail: `${cdnBaseUrl}/images/projects/portfolio-custom.jpg`,
                 description: 'A custom description that is much better than the one on GitHub! This showcases the override system.',
                 tags: ['Node.js', 'Express', 'JavaScript', 'Config-Driven'],
                 liveUrl: 'https://your-portfolio-live-url.com'
@@ -135,6 +141,10 @@ app.get('/api/blogs', (req, res) => {
         const files = fs.readdirSync(blogsDir).filter(file => file.endsWith('.md'));
         const posts = files.map(file => {
             const metadata = getPostMetadata(path.join(blogsDir, file));
+            // ** NEW: Prepend CDN URL to relative thumbnail paths **
+            if (metadata.thumbnail && !metadata.thumbnail.startsWith('http')) {
+                metadata.thumbnail = `${cdnBaseUrl}/${metadata.thumbnail.replace(/^\//, '')}`;
+            }
             return { slug: path.parse(file).name, ...metadata };
         }).sort((a, b) => new Date(b.date) - new Date(a.date));
         res.json(posts);
