@@ -57,9 +57,56 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         const renderBlogPostPage = async (slug) => {
             content.innerHTML = '<h2>Blog</h2><div id="blog-post-container">Loading...</div>';
-            const res = await fetch(`/api/blogs/${slug}`);
-            const post = await res.json();
-            document.getElementById('blog-post-container').innerHTML = `<a href="#blog" class="back-link">&larr; Back to all posts</a><div class="blog-content">${post.html}</div>`;
+            try {
+                const res = await fetch(`/api/blogs/${slug}`);
+                if (!res.ok) throw new Error('Blog post not found.');
+                const post = await res.json();
+
+                // Render the blog post content
+                const postContainer = document.getElementById('blog-post-container');
+                postContainer.innerHTML = `
+                    <a href="#blog" class="back-link">&larr; Back to all posts</a>
+                    <div class="blog-content">${post.html}</div>
+                    <hr style="margin: 3rem 0; border-color: var(--border-color);">
+                    <div id="comments-section"></div>
+                `;
+
+                // --- START OF GISCUS IMPLEMENTATION ---
+                
+                // Remove any old Giscus instance to prevent conflicts when navigating between posts
+                const oldGiscusFrame = document.querySelector('.giscus');
+                if (oldGiscusFrame) {
+                    oldGiscusFrame.remove();
+                }
+
+                // Create the new Giscus script tag
+                const script = document.createElement('script');
+                script.src = "https://giscus.app/client.js";
+                
+                // Paste all the "data-*" attributes from the script Giscus gave you here.
+                // Below are examples - use the ones you generated on the Giscus website!
+                script.setAttribute("data-repo", "listingclown3/blog");
+                script.setAttribute("data-repo-id", "YOUR_REPO_ID_FROM_GISCUS");
+                script.setAttribute("data-category", "Announcements");
+                script.setAttribute("data-category-id", "YOUR_CATEGORY_ID_FROM_GISCUS");
+                script.setAttribute("data-mapping", "pathname");
+                script.setAttribute("data-strict", "0");
+                script.setAttribute("data-reactions-enabled", "1");
+                script.setAttribute("data-emit-metadata", "0");
+                script.setAttribute("data-input-position", "bottom");
+                script.setAttribute("data-theme", "dark_dimmed");
+                script.setAttribute("data-lang", "en");
+                script.setAttribute("crossorigin", "anonymous");
+                script.async = true;
+
+                // Append the script to your new comments section
+                document.getElementById('comments-section').appendChild(script);
+                // --- END OF GISCUS IMPLEMENTATION ---
+
+            } catch (error) {
+                console.error("Error rendering blog post:", error);
+                document.getElementById('blog-post-container').innerHTML = `<p>Could not load blog post.</p>`;
+            }
         };
         const renderProjectsPage = async () => {
             content.innerHTML = `<h2>Projects</h2><div id="project-list">Loading projects...</div>`;
