@@ -3,69 +3,91 @@ const path = require('path');
 const https = require('https');
 const fs = require('fs');
 const { marked } = require('marked');
+const matter = require('gray-matter'); // New dependency
+
+// --- START OF NEW UTILITY/HELPER FUNCTIONS ---
+
+// New: Function to log suspicious activity
+const logSuspiciousActivity = (req, message) => {
+    const logMessage = `[${new Date().toISOString()}] SUSPICIOUS ACTIVITY: ${message} | IP: ${req.ip} | Path: ${req.path}\n`;
+    fs.appendFile('suspicious_activity.log', logMessage, (err) => {
+        if (err) console.error("Failed to write to suspicious log:", err);
+    });
+};
+
+// New: Load image library from JSON file
+const imageLibrary = JSON.parse(fs.readFileSync(path.join(__dirname, 'image_library.json'), 'utf8'));
+
+// New: Function to load project data from the 'projects' directory
+const getProjectsFromMarkdown = () => {
+    const projectsDir = path.join(__dirname, 'projects');
+    try {
+        const files = fs.readdirSync(projectsDir).filter(file => file.endsWith('.md'));
+        return files.map(file => {
+            const filePath = path.join(projectsDir, file);
+            const fileContent = fs.readFileSync(filePath, 'utf-8');
+            const { data, content } = matter(fileContent); // Use gray-matter to parse
+            
+            // Resolve thumbnail from image library
+            if (data.thumbnail && imageLibrary.projectThumbnails[data.thumbnail]) {
+                data.thumbnail = imageLibrary.projectThumbnails[data.thumbnail];
+            }
+
+            return {
+                ...data,
+                slug: path.parse(file).name,
+                customContent: content // The notes/to-do section
+            };
+        });
+    } catch (error) {
+        console.error("Could not read projects directory:", error);
+        return [];
+    }
+};
 
 // --- START OF CONFIGURATION ---
-
-// Base URL for your assets. For local dev, it points to your cdn-server.
-// In production, you would change this to your actual CDN domain.
-const cdnBaseUrl = process.env.NODE_ENV === 'production'
-    ? 'https://your-production-cdn-url.com'
-    : 'http://localhost:3001';
-
 const config = {
     homePage: {
-        title: 'Christopher C. Luk',
-        subtitle: 'Software Engineer & Web Developer',
-        aboutMe: `
-            I am a passionate software engineer with a knack for creating elegant, efficient, and user-friendly web applications. 
-            With a strong foundation in both front-end and back-end development, I enjoy bringing ideas to life from concept to deployment.
-        `,
-        galleryImages: [
-            { src: `${cdnBaseUrl}/images/gallery/a.jpg`, alt: 'Description for image 1' },
-            { src: `${cdnBaseUrl}/images/gallery/b.jpg`, alt: 'Description for image 2' },
+        title: '',
+        subtitle: '',
+        aboutMe: [
+            'Lorem',
+            'ipsum',
+            'i forgot the rest'
         ],
-        backgroundOpacity: 1,
-        backgroundImages: [
-            `${cdnBaseUrl}/images/backgrounds/1.png`,
-            `${cdnBaseUrl}/images/backgrounds/2.jpg`,
-            `${cdnBaseUrl}/images/backgrounds/3.jpg`
-        ]
+        galleryImages: imageLibrary.galleryImages,
+        backgroundImages: imageLibrary.backgroundImages,
+        sideBanners: imageLibrary.sideBanners,
+        backgroundOpacity: 0.1,
+        bannerOpacity: 0.6
     },
     experience: [
-        {
-            role: 'Senior Software Engineer',
-            company: 'Tech Solutions Inc.',
-            date: '2022 - Present',
-            description: 'Leading the development of scalable web applications using Node.js and React. Mentoring junior developers and driving architectural decisions.'
+         {
+            role: 'Full Stack Developer',
+            company: 'Team 2073 Robotics FRC',
+            date: '2024 - Present',
+            description: ''
         },
         {
-            role: 'Junior Web Developer',
-            company: 'Creative Web Agency',
-            date: '2020 - 2022',
-            description: 'Developed and maintained client websites, focusing on responsive design and performance. Gained expertise in HTML, CSS, and JavaScript.'
-        }
+            role: 'Full Stack Developer',
+            company: 'Zylink Tech',
+            date: '2023 - Present',
+            description: ''
+        },
     ],
     projects: {
         githubUsername: 'listingclown3',
         fetchFromGitHub: true,
-        overrides: [
-            {
-                name: 'my-portfolio',
-                thumbnail: `${cdnBaseUrl}/images/projects/portfolio-custom.jpg`,
-                description: 'A custom description that is much better than the one on GitHub! This showcases the override system.',
-                tags: ['Node.js', 'Express', 'JavaScript', 'Config-Driven'],
-                liveUrl: 'https://your-portfolio-live-url.com'
-            }
-        ]
+        featuredRepoForActivity: 'blog' 
     },
     socialLinks: [
-        { name: 'Email', url: 'mailto:your.email@example.com' },
         { name: 'GitHub', url: 'https://github.com/listingclown3' },
+        { name: 'YouTube', url: 'https://www.youtube.com/@list3andtableofcontents112' },
     ],
     pages: [
         { name: 'Home' },
         { name: 'Projects' },
-        { name: 'Blog' }
+        { name: 'Blog' },
     ]
 };
 
@@ -74,58 +96,87 @@ const config = {
 const app = express();
 const port = 3000;
 
-// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 // --- API Endpoints ---
 
-// NEW: API endpoint to serve the configuration to the client
 app.get('/api/config', (req, res) => {
     res.json(config);
 });
 
-// The "Smart" Projects API (now uses the internal config object)
+// Modified: The Projects API now uses the Markdown-based system
 app.get('/api/projects', async (req, res) => {
     let finalProjects = [];
-    const overrides = config.projects.overrides || [];
-    const customProjects = overrides.filter(p => p.isCustom);
+    const localProjects = getProjectsFromMarkdown(); // Get projects from /projects/*.md
 
     if (config.projects.fetchFromGitHub) {
         try {
             const githubRepos = await fetchGitHubRepos(config.projects.githubUsername);
             finalProjects = githubRepos.map(repo => {
-                const override = overrides.find(o => o.name.toLowerCase() === repo.name.toLowerCase());
-                // The override object takes precedence
-                return override ? { ...repo, ...override } : repo;
+                const localOverride = localProjects.find(p => p.name.toLowerCase() === repo.name.toLowerCase());
+                return localOverride ? { ...repo, ...localOverride } : repo;
             });
+
+            // Add projects from Markdown that were not found on GitHub
+            localProjects.forEach(localProject => {
+                if (!finalProjects.some(p => p.name.toLowerCase() === localProject.name.toLowerCase())) {
+                    finalProjects.push(localProject);
+                }
+            });
+
         } catch (error) {
             console.error("Failed to fetch from GitHub:", error.message);
-            finalProjects = [];
+            logSuspiciousActivity(req, "GitHub API fetch failed.");
+            finalProjects = localProjects; // Fallback to local projects
         }
+    } else {
+        finalProjects = localProjects;
     }
     
-    finalProjects.push(...customProjects);
-    finalProjects.sort((a, b) => (b.thumbnail || b.description) ? 1 : -1);
     res.json(finalProjects);
 });
 
+
+// Modified: The Project Detail API now includes custom content and related materials
 app.get('/api/project/:name', async (req, res) => {
     try {
         const repoName = req.params.name;
         const owner = config.projects.githubUsername;
 
-        // Fetch README and Commits in parallel
-        const [readme, commits] = await Promise.all([
+        const localProject = getProjectsFromMarkdown().find(p => p.slug.toLowerCase() === repoName.toLowerCase());
+        if (!localProject) {
+            logSuspiciousActivity(req, `Attempted to access non-existent project: ${repoName}`);
+            return res.status(404).json({ message: 'Project not found.' });
+        }
+
+        const customHtml = localProject.customContent ? marked(localProject.customContent) : '';
+
+        // If it's a custom project (no repoUrl), return only local data
+        if (!localProject.repoUrl) {
+            return res.json({
+                isCustom: true,
+                customHtml,
+                related: localProject.related || [],
+                name: localProject.name || repoName,
+            });
+        }
+
+        // If it's a GitHub project, fetch all details
+        const [readme, commits, branches] = await Promise.all([
             fetchGitHubFile(owner, repoName, 'README.md'),
-            fetchGitHubCommits(owner, repoName)
+            fetchGitHubCommits(owner, repoName),
+            fetchGitHubBranches(owner, repoName) // New: Fetch branches
         ]);
         
         const readmeHtml = readme ? marked(readme) : '<p>No README file found for this project.</p>';
 
         res.json({
             readmeHtml,
-            commits: commits.slice(0, 10) // Send the 10 latest commits
+            customHtml,
+            related: localProject.related || [],
+            commits: commits ? commits.slice(0, 10) : [],
+            branches: branches || [], // Send branches
+            name: localProject.name || repoName,
         });
 
     } catch (error) {
@@ -134,37 +185,70 @@ app.get('/api/project/:name', async (req, res) => {
     }
 });
 
-// Blog API endpoints (no changes)
-app.get('/api/blogs', (req, res) => {
+// New: API endpoint for the homepage activity feed
+app.get('/api/activity', (req, res) => {
+    const projects = getProjectsFromMarkdown()
+        .sort((a, b) => (fs.statSync(path.join(__dirname, 'projects', `${b.slug}.md`)).mtime) - (fs.statSync(path.join(__dirname, 'projects', `${a.slug}.md`)).mtime))
+        .slice(0, 3);
+    
+    const blogs = getBlogPosts()
+        .slice(0, 2);
+
+    res.json({ recentProjects: projects, recentBlogs: blogs });
+});
+
+// New: API endpoint for the GitHub activity monitor
+app.get('/api/github-activity', async (req, res) => {
+    const repoName = config.projects.featuredRepoForActivity;
+    if (!repoName) {
+        return res.status(404).json({ message: "No featured repository is set in the configuration." });
+    }
+    try {
+        const commits = await fetchGitHubCommits(config.projects.githubUsername, repoName);
+        res.json(commits.slice(0, 5)); // Send the latest 5 commits
+    } catch (error) {
+        console.error(`Could not fetch commits for ${repoName}:`, error);
+        res.status(500).json({ message: "Could not fetch GitHub activity." });
+    }
+});
+
+
+// Blog API endpoints (modified slightly for reuse)
+const getBlogPosts = () => {
     const blogsDir = path.join(__dirname, 'blogs');
     try {
         const files = fs.readdirSync(blogsDir).filter(file => file.endsWith('.md'));
-        const posts = files.map(file => {
+        return files.map(file => {
             const metadata = getPostMetadata(path.join(blogsDir, file));
-            // ** NEW: Prepend CDN URL to relative thumbnail paths **
-            if (metadata.thumbnail && !metadata.thumbnail.startsWith('http')) {
-                metadata.thumbnail = `${cdnBaseUrl}/${metadata.thumbnail.replace(/^\//, '')}`;
-            }
             return { slug: path.parse(file).name, ...metadata };
         }).sort((a, b) => new Date(b.date) - new Date(a.date));
-        res.json(posts);
     } catch (error) {
         console.error("Could not read blogs directory:", error);
-        res.status(500).json({ message: "Error reading blog posts." });
+        return [];
     }
+};
+
+app.get('/api/blogs', (req, res) => {
+    const posts = getBlogPosts();
+    if (posts.length === 0) {
+        return res.status(500).json({ message: "Error reading blog posts." });
+    }
+    res.json(posts);
 });
+
 
 app.get('/api/blogs/:slug', (req, res) => {
     const slug = req.params.slug;
     const filePath = path.join(__dirname, 'blogs', `${slug}.md`);
 
     if (!fs.existsSync(filePath)) {
+        logSuspiciousActivity(req, `Attempted to access non-existent blog post: ${slug}`);
         return res.status(404).json({ message: 'Blog post not found.' });
     }
 
     const fileContent = fs.readFileSync(filePath, 'utf-8');
-    const contentWithoutFrontMatter = fileContent.replace(/---([\s\S]+?)---/, '').trim();
-    const htmlContent = marked(contentWithoutFrontMatter);
+    const { content } = matter(fileContent); // Use gray-matter here as well for consistency
+    const htmlContent = marked(content);
     res.json({ html: htmlContent });
 });
 
@@ -246,6 +330,23 @@ function fetchGitHubCommits(owner, repo) {
         }).on('error', e => reject(e));
     });
 }
+
+function fetchGitHubBranches(owner, repo) {
+    return new Promise((resolve, reject) => {
+        const options = {
+            hostname: 'api.github.com',
+            path: `/repos/${owner}/${repo}/branches`,
+            headers: { 'User-Agent': 'Node.js-Portfolio-App' }
+        };
+        https.get(options, (res) => {
+            if (res.statusCode !== 200) return reject(new Error(`GitHub API for branches responded with ${res.statusCode}`));
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => resolve(JSON.parse(data)));
+        }).on('error', e => reject(e));
+    });
+}
+
 // Start server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

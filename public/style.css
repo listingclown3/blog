@@ -115,7 +115,7 @@ a:hover {
 .timeline-date { font-size: 0.9rem; color: var(--secondary-text-color); margin-bottom: 1rem; }
 
 /* --- Project & Blog Cards --- */
-#project-list, #blog-list-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+.project-list, #blog-list-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
 .project-card, .blog-post-item { background-color: var(--primary-surface-color); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; text-decoration: none; }
 .project-card:hover, .blog-post-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
 .project-thumbnail, .blog-thumbnail { width: 100%; height: 200px; object-fit: cover; }
@@ -146,8 +146,8 @@ a:hover {
     background-size: cover;
     background-position: center;
     z-index: -2;
-    opacity: 0; /* Start invisible */
-    transition: opacity 1s ease-in-out; /* Animate the opacity */
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
 }
 #background-rotator::before {
     content: '';
@@ -156,7 +156,6 @@ a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    /* The overlay darkness is now controlled by a variable from the JS */
     background-color: rgba(18, 18, 18, var(--bg-overlay-alpha, 0.85));
     z-index: -1;
 }
@@ -174,6 +173,128 @@ a:hover {
 .commit-message { font-weight: 500; margin-bottom: 0.5rem; }
 .commit-meta { font-size: 0.85rem; color: var(--secondary-text-color); }
 
+/* --- Side Banners --- */
+.side-banner {
+    position: fixed;
+    top: 0;
+    width: 15vw;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+    opacity: var(--banner-opacity, 0.15); 
+}
+#left-banner {
+    left: 0;
+}
+#right-banner {
+    right: 0;
+}
+
+/* --- Activity Feeds & Pinned Projects --- */
+#activity-feed-container ul,
+#github-activity-container ul {
+    list-style: none;
+    padding-left: 0;
+}
+#activity-feed-container li {
+    background-color: var(--primary-surface-color);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    border-left: 4px solid var(--accent-color);
+}
+#github-activity-container .commit-tree.mini li::before {
+    left: -2.2rem;
+}
+#github-activity-container .commit-tree.mini .commit-message {
+    font-size: 0.9rem;
+}
+.contribution-graph {
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: var(--primary-surface-color);
+}
+.contribution-graph img {
+    width: 100%;
+    display: block;
+}
+
+/* --- Project Detail Page Additions --- */
+.related-materials {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+.related-materials h3 {
+    margin-bottom: 1rem;
+}
+.related-materials ul {
+    list-style: none;
+    padding: 0;
+}
+.related-materials li a {
+    display: block;
+    padding: 0.75rem 1rem;
+    background-color: var(--secondary-surface-color);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+.related-materials li a:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+.branches-list {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+.branches-list h4 {
+    margin: 0 0 1rem 0;
+    color: var(--primary-text-color);
+    text-align: center;
+}
+.branches-list ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+.branches-list li {
+    background-color: var(--secondary-surface-color);
+    color: var(--secondary-text-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* --- Styling for Sub-headers on Projects Page --- */
+.projects-sub-header {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.projects-sub-header:first-of-type {
+    margin-top: 0;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 1200px) {
+    .side-banner {
+        display: none;
+    }
+}
 @media (max-width: 900px) {
     .project-detail-layout { grid-template-columns: 1fr; }
     .commit-container { margin-top: 2rem; }

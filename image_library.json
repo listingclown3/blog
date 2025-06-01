@@ -1,0 +1,15 @@
+{
+  "galleryImages": [
+    { "src": "", "alt": "" }
+  ],
+  "backgroundImages": [
+    ""
+    ],
+  "projectThumbnails": {
+    "blog_thumbnail": "https://media.discordapp.net/attachments/1378484741040242789/1378504275759595652/write-blog-post-icon-blogging-600nw-2417074323.png?ex=683cd7a6&is=683b8626&hm=99227feef442c2ae23359c1de94a4d885a30df74d76ea37050a87ac314a59eec&=&format=webp&quality=lossless&width=480&height=480"
+  },
+  "sideBanners": {
+    "left": "",
+    "right": ""
+  }
+}
