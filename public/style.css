@@ -97,8 +97,20 @@ a:hover {
 .social-button { background-color: var(--primary-surface-color); border: 1px solid var(--border-color); color: var(--primary-text-color); padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; }
 .social-button:hover { background-color: var(--accent-color); border-color: var(--accent-color); color: white; transform: translateY(-3px); }
 #gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-.gallery-image { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 1px solid var(--border-color); opacity: 0.8; transition: opacity 0.3s ease; }
-.gallery-image:hover { opacity: 1; }
+.gallery-image {
+    /* Most rules moved to the container, but keep this for non-container images if any */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    opacity: 0.8; 
+    transition: opacity 0.3s ease;
+}
+
+.gallery-image:hover {
+    opacity: 1;
+}
 .home-section { margin: 6rem 0; }
 .home-section h2 { text-align: center; font-size: 2rem; margin-bottom: 3rem; }
 .about-me-text { max-width: 700px; margin: 0 auto; text-align: center; font-size: 1.2rem; }
@@ -298,4 +310,54 @@ a:hover {
 @media (max-width: 900px) {
     .project-detail-layout { grid-template-columns: 1fr; }
     .commit-container { margin-top: 2rem; }
+}
+.gallery-item-container {
+    position: relative; /* Required for the overlay positioning */
+    border-radius: 12px; /* Match the image's border-radius */
+    overflow: hidden; /* Ensures the overlay corners are also rounded */
+    border: 1px solid var(--border-color);
+}
+
+.gallery-item-container .gallery-image {
+    display: block; /* Removes any extra space below the image */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: none; /* Border is now on the container */
+    transition: transform 0.3s ease; /* Optional: adds a slight zoom on hover */
+}
+
+.gallery-item-container:hover .gallery-image {
+    transform: scale(1.05); /* Optional: slight zoom effect */
+}
+
+.gallery-item-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+    
+    /* Center the description text */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.3s ease-in-out; /* Smooth fade-in/out effect */
+}
+
+.gallery-item-container:hover .gallery-item-overlay {
+    opacity: 1; /* Show the overlay on hover */
+}
+
+.gallery-item-description {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #EAEAEA; /* Ensure text is light */
 }

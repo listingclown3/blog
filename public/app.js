@@ -51,6 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const ghUsername = config.projects.githubUsername;
             const contributionGraphUrl = `https://ghchart.rshah.org/${ghUsername}`;
 
+            // MODIFIED: The gallery mapping now creates a container and an overlay for the description.
+            const galleryHtml = config.homePage.galleryImages.map(img => `
+                <div class="gallery-item-container">
+                    <img src="${img.src}" alt="${img.alt}" class="gallery-image">
+                    <div class="gallery-item-overlay">
+                        <p class="gallery-item-description">${img.description || ''}</p>
+                    </div>
+                </div>
+            `).join('');
+
             content.innerHTML = `
                 <div id="home-header"><h1>${config.homePage.title}</h1><p>${config.homePage.subtitle}</p></div>
                 <div id="social-links">${config.socialLinks.map(link => `<a href="${link.url}" class="social-button" target="_blank">${link.name}</a>`).join('')}</div>
@@ -71,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div id="github-activity-container">Loading...</div>
                 </div>
-                <div class="home-section"><h2>Gallery</h2><div id="gallery">${config.homePage.galleryImages.map(img => `<img src="${img.src}" alt="${img.alt}" class="gallery-image">`).join('')}</div></div>
+                <div class="home-section"><h2>Gallery</h2><div id="gallery">${galleryHtml}</div></div>
                 `;
             
             setupScrollAnimations();
