@@ -323,13 +323,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.tagName === 'A') { e.preventDefault(); window.location.hash = e.target.hash; }
         });
         content.addEventListener('click', e => {
-            const projectCard = e.target.closest('.project-card');
-            const blogItem = e.target.closest('.blog-post-item');
-            const backLink = e.target.closest('.back-link');
-            if (projectCard) { e.preventDefault(); window.location.hash = `projects/${projectCard.dataset.name}`; } 
-            else if (blogItem) { e.preventDefault(); window.location.hash = `blog/${blogItem.dataset.slug}`; } 
-            else if (backLink) { e.preventDefault(); window.location.hash = backLink.hash; }
-        });
+        const projectCard = e.target.closest('.project-card');
+        const blogItem = e.target.closest('.blog-post-item');
+        const backLink = e.target.closest('.back-link');
+        const projectButton = e.target.closest('.project-button'); // Add this line
+        
+        if (projectButton) {
+            // If clicking on a project button (GitHub/Live Demo), let the default behavior happen
+            return;
+        } else if (projectCard) { 
+            e.preventDefault(); 
+            window.location.hash = `projects/${projectCard.dataset.name}`; 
+        } else if (blogItem) { 
+            e.preventDefault(); 
+            window.location.hash = `blog/${blogItem.dataset.slug}`; 
+        } else if (backLink) { 
+            e.preventDefault(); 
+            window.location.hash = backLink.hash; 
+        }
+    });
         window.addEventListener('hashchange', handleRouteChange);
         handleRouteChange();
     };
